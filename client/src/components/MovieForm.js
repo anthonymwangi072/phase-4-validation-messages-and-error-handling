@@ -3,6 +3,7 @@ import styled from "styled-components";
 
 function MovieForm() {
   const [formData, setFormData] = useState({
+    // const [errors, setErrors] = useState({
     title: "",
     year: new Date().getFullYear(),
     length: "0",
@@ -14,17 +15,23 @@ function MovieForm() {
     female_director: false,
   });
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    fetch("/movies", {
+    // fetch returns a Promise, we must await it
+    const response = await fetch("/movies", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(formData),
-    })
-      .then((response) => response.json())
-      .then((newMovie) => console.log(newMovie));
+    });
+    // response.json() returns a Promise, we must await it
+    const data = await response.json();
+    if (response.ok) {
+      console.log("Movie created:", data);
+    } else {
+      setFormData(data.errors);
+    }
   }
 
   function handleChange(e) {
